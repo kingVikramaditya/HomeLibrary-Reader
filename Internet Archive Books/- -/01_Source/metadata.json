@@ -1,0 +1,37 @@
+﻿{
+    "identifier":  "bibaha-o-prajanana-prasanga",
+    "mediatype":  "texts",
+    "creator":  "Thakur Anukul Chandra",
+    "description":  "\u003cdiv\u003e\u003cb\u003eBibaha O Prajanana Prasanga - Sri Sri Thakur Anukulchandra\u003c/b\u003e\u003cbr /\u003e\u003c/div\u003e\u003cb\u003e\u003c/b\u003e\u003cdiv\u003e\u003cb\u003e\u003cb\u003e\u003cbr /\u003e\u003c/b\u003e\u003c/b\u003e\u003c/div\u003e\u003cb\u003eà¬¬à¬¿à¬¬à¬¾à¬¹ à¬“ à¬ªà­à¬°à¬œà¬¨à¬¨-à¬ªà­à¬°à¬¸à¬™à­à¬—\u003c/b\u003e\u003cdiv\u003e\u003cb\u003eà¬¶à­à¬°à­€à¬¶à­à¬°à­€à¬ à¬¾à¬•à­à¬° à¬…à¬¨à­à¬•à­à¬³à¬šà¬¨à­à¬¦à­à¬°à¬™à­à¬• à¬•à¬¥à¬¿à¬¤\u003c/b\u003e\u003cbr /\u003e\u003c/div\u003e\u003cdiv\u003e\u003cdiv\u003e\u003cb\u003e\u003cbr /\u003e\u003c/b\u003e\u003c/div\u003e\u003cdiv\u003e\u003cb\u003eà¬¸à¬‚à¬•à¬³à¬•\u003c/b\u003e\u003c/div\u003e\u003cdiv\u003e\u003cb\u003eà¬¶à­à¬°à­€à¬¬à¬¿à¬¦à­à­Ÿà­à¬¤à­â€â€à¬°à¬žà­à¬œà¬¨ à¬šà¬•à­à¬°à¬¬à¬°à­à¬¤à­à¬¤à­€\u003c/b\u003e\u003c/div\u003e\u003c/div\u003e",
+    "language":  "ori",
+    "licenseurl":  "https://creativecommons.org/licenses/by-nc-nd/4.0/",
+    "scanner":  "Internet Archive HTML5 Uploader 1.7.0",
+    "subject":  [
+                    "Sri Sri Thakur Anukul Chandra;Shri Shri Thakur Anukul Chandra;Anukul Chandra",
+                    "Marriage",
+                    "Oriya",
+                    "Odia"
+                ],
+    "title":  "à¬¬à¬¿à¬¬à¬¾à¬¹ à¬“ à¬ªà­à¬°à¬œà¬¨à¬¨-à¬ªà­à¬°à¬¸à¬™à­à¬— - à¬¶à­à¬°à­€à¬¶à­à¬°à­€à¬ à¬¾à¬•à­à¬° à¬…à¬¨à­à¬•à­à¬³à¬šà¬¨à­à¬¦à­à¬°",
+    "uploader":  "astimatra@gmail.com",
+    "publicdate":  "2022-09-07 07:10:47",
+    "addeddate":  "2022-09-07 07:10:47",
+    "identifier-access":  "http://archive.org/details/bibaha-o-prajanana-prasanga",
+    "identifier-ark":  "ark:/13960/s25v8rr1fnz",
+    "ppi":  "600",
+    "curation":  "[curator]validator@archive.org[/curator][date]20220907074620[/date][comment]checked for malware[/comment]",
+    "ocr":  "tesseract 5.2.0-1-gc42a",
+    "ocr_parameters":  "-l ori",
+    "ocr_module_version":  "0.0.18",
+    "ocr_detected_script":  "Latin",
+    "ocr_detected_script_conf":  "0.9902",
+    "ocr_detected_lang":  "or",
+    "ocr_detected_lang_conf":  "1.0000",
+    "collection":  [
+                       "booksbylanguage_oriya",
+                       "booksbylanguage"
+                   ],
+    "collection_added":  "booksbylanguage",
+    "page_number_confidence":  "97",
+    "page_number_module_version":  "1.0.5"
+}

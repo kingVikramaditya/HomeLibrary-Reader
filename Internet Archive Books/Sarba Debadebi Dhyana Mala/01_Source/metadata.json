@@ -1,0 +1,38 @@
+﻿{
+    "identifier":  "sarba-debadebi-dhyana-mala",
+    "mediatype":  "texts",
+    "collection":  [
+                       "booksbylanguage_oriya",
+                       "booksbylanguage"
+                   ],
+    "creator":  "Santosh Prakashani",
+    "description":  "Sarba Debadebi Dhayana Mala",
+    "language":  "ori",
+    "licenseurl":  "https://creativecommons.org/publicdomain/mark/1.0/",
+    "scanner":  "Internet Archive HTML5 Uploader 1.7.0",
+    "subject":  [
+                    "Odia",
+                    "Oriya",
+                    "Shloka",
+                    "Stuti",
+                    "Stotra"
+                ],
+    "title":  "Sarba Debadebi Dhyana Mala",
+    "uploader":  "dashsubrat98@gmail.com",
+    "publicdate":  "2023-10-02 05:56:23",
+    "addeddate":  "2023-10-02 05:56:23",
+    "curation":  "[curator]validator@archive.org[/curator][date]20231002060148[/date][comment]checked for malware[/comment]",
+    "identifier-access":  "http://archive.org/details/sarba-debadebi-dhyana-mala",
+    "identifier-ark":  "ark:/13960/s23vr2wcnmj",
+    "ppi":  "533",
+    "ocr":  "tesseract 5.3.0-3-g9920",
+    "ocr_parameters":  "-l ori",
+    "ocr_module_version":  "0.0.21",
+    "ocr_detected_script":  "Latin",
+    "ocr_detected_script_conf":  "1.0000",
+    "ocr_detected_lang":  "or",
+    "ocr_detected_lang_conf":  "1.0000",
+    "page_number_confidence":  "0",
+    "page_number_module_version":  "1.0.3",
+    "collection_added":  "booksbylanguage"
+}

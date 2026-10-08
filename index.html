@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en" data-app-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HOMELIBRARY — Modern EBook Reader</title>
+  
+  <!-- Fonts (Inter, Merriweather, Noto Sans/Serif Devanagari for Hindi/Sanskrit, Noto Sans/Serif Oriya for Odia) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Noto+Serif+Devanagari:wght@400;700&family=Noto+Sans+Oriya:wght@400;500;600;700&family=Noto+Serif+Oriya:wght@400;700&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/modal.css">
+  <link rel="stylesheet" href="css/reader.css">
+</head>
+<body>
+
+  <!-- Main Floating Desktop Window (Exact Dribbble Replica) -->
+  <div class="app-window" id="app-window">
+    
+    <!-- Left Sidebar -->
+    <aside class="sidebar">
+      <div class="brand-logo" onclick="LibraryApp.switchMainView('library')">
+        <span>HOMELIBRARY</span>
+      </div>
+
+      <!-- Main Navigation Menu -->
+      <div class="sidebar-heading">Menu</div>
+      <ul class="sidebar-nav" id="sidebar-main-nav">
+        <li class="nav-item active" data-view="library" onclick="LibraryApp.switchMainView('library')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>My Library</span>
+        </li>
+        <li class="nav-item" data-view="downloader" onclick="LibraryApp.switchMainView('downloader')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>Archive Downloader</span>
+        </li>
+        <li class="nav-item" data-view="ocr" onclick="LibraryApp.switchMainView('ocr')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          <span>OCR &amp; Text Files</span>
+        </li>
+      </ul>
+
+      <!-- Genres Section -->
+      <div class="sidebar-heading" style="margin-top: 18px;">Genres</div>
+      <ul class="genre-list" id="sidebar-genres">
+        <!-- Dynamically rendered genres -->
+      </ul>
+      <div class="see-all-btn" onclick="LibraryApp.resetFilters()">
+        <span>See All</span>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+
+      <!-- Quick Import in Sidebar -->
+      <div class="sidebar-import-box">
+        <button class="import-drop-btn" id="sidebar-import-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          <span>Add E-Books</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- Top Header Navigation Bar -->
+      <header class="top-header">
+        
+        <!-- Search Input -->
+        <div class="search-container">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" class="search-input" id="search-input" placeholder="Search" autocomplete="off">
+        </div>
+
+        <!-- Right Header Actions -->
+        <div class="header-actions">
+          
+          <!-- Add Book Button -->
+          <button class="action-btn" id="btn-import-book" title="Import E-Book (PDF, EPUB, DOCX, TXT)">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </button>
+
+          <!-- Night Light Warmth Control -->
+          <button class="action-btn" id="btn-toggle-warmth" title="Night Light Warmth Filter" onclick="LibraryApp.toggleWarmthPopover()">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          </button>
+
+          <!-- App Theme Toggle (Dark / Light / Sepia / Night / AMOLED) -->
+          <button class="action-btn" id="btn-toggle-theme" title="Switch Theme (Dark, Light, Sepia, Night, AMOLED)">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+          </button>
+
+          <!-- Notification Bell with Red Badge -->
+          <button class="action-btn" id="btn-notifications" title="Notifications" onclick="alert('All your reading synchronizations are up to date!')">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+            <span class="notification-badge"></span>
+          </button>
+
+          <!-- User Profile (Click opens Profile Editor & Reading Stats) -->
+          <div class="user-profile" id="user-profile-btn" onclick="LibraryApp.openProfileStatsModal()" title="View Profile &amp; Reading Stats">
+            <span class="user-name" id="header-user-name">Jessica Chastain</span>
+            <img src="assets/avatars/user_jessica.png" alt="User Profile" class="user-avatar" id="header-user-avatar">
+          </div>
+
+        </div>
+
+      </header>
+
+      <!-- Warmth Popover -->
+      <div class="warmth-popover" id="warmth-popover">
+        <div class="warmth-label">
+          <span>Night Light Warmth</span>
+          <span id="warmth-popover-val">0%</span>
+        </div>
+        <input type="range" class="warmth-slider" id="app-warmth-slider" min="0" max="100" value="0">
+      </div>
+
+      <!-- VIEW 1: MY LIBRARY SHELVES -->
+      <div class="shelves-container" id="shelves-view">
+        
+        <!-- ROW 1: MOST POPULAR -->
+        <section class="shelf-section">
+          <div class="shelf-header">
+            <h2 class="shelf-title">MOST POPULAR</h2>
+            <span class="shelf-count">7 titles</span>
+          </div>
+          <div class="book-row" id="row-most-popular">
+            <!-- Dynamically populated popular cards -->
+          </div>
+        </section>
+
+        <!-- ROW 2: RECOMMENDED -->
+        <section class="shelf-section">
+          <div class="shelf-header">
+            <h2 class="shelf-title">RECOMMENDED</h2>
+            <span class="shelf-count">7 titles</span>
+          </div>
+          <div class="book-row" id="row-recommended">
+            <!-- Dynamically populated recommended cards -->
+          </div>
+        </section>
+
+        <!-- ROW 3: IMPORTED & DOWNLOADED BOOKS -->
+        <section class="shelf-section" id="section-imported" style="display: none;">
+          <div class="shelf-header">
+            <h2 class="shelf-title">MY DOWNLOADS &amp; IMPORTED BOOKS</h2>
+            <span class="shelf-count" id="imported-count">0 titles</span>
+          </div>
+          <div class="book-row" id="row-imported">
+            <!-- Dynamically populated user imported books -->
+          </div>
+        </section>
+
+      </div>
+
+      <!-- VIEW 2: INTERNET ARCHIVE DOWNLOADER & OCR ENGINE -->
+      <div class="view-container" id="archive-downloader-view" style="display: none;">
+        <div class="downloader-wrapper">
+          
+          <!-- Hero Header -->
+          <div class="downloader-hero">
+            <div class="downloader-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Internet Archive Universal Importer &amp; OCR Engine</span>
+            </div>
+            <h1 class="downloader-title">Download Books from Internet Archive</h1>
+            <p class="downloader-subtitle">
+              Input any Internet Archive book URL or identifier to download original scan PDFs into your main dashboard bookshelf, extract DjVu OCR text with Unicode NFC normalization, and generate formatted Microsoft Word (.docx) documents.
+            </p>
+          </div>
+
+          <!-- Input Card -->
+          <div class="archive-input-card">
+            <div class="archive-input-bar">
+              <svg class="archive-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+              <input type="text" class="archive-text-input" id="archive-url-input" placeholder="Paste archive.org URL or identifier (e.g. alicesadventure00carrgoog or https://archive.org/details/...)">
+              <button class="archive-fetch-btn" id="archive-fetch-btn" onclick="ArchiveApp.fetchMetadata()">
+                <span id="fetch-btn-label">Inspect Book</span>
+              </button>
+            </div>
+
+            <!-- Quick Suggestion Samples -->
+            <div class="archive-examples">
+              <span class="examples-label">Popular samples:</span>
+              <button class="example-chip" onclick="ArchiveApp.loadSample('alicesadventure00carrgoog')">Alice's Adventures</button>
+              <button class="example-chip" onclick="ArchiveApp.loadSample('timemachine00wellgoog')">The Time Machine</button>
+              <button class="example-chip" onclick="ArchiveApp.loadSample('draculastoker00stokrich')">Dracula</button>
+              <button class="example-chip" onclick="ArchiveApp.loadSample('frankensteinormo00shel')">Frankenstein</button>
+            </div>
+          </div>
+
+          <!-- Inspected Book Details & Options Card (Initially Hidden) -->
+          <div class="archive-details-card" id="archive-details-card" style="display: none;">
+            <div class="archive-book-preview">
+              <img src="" id="archive-preview-cover" alt="Cover" class="archive-preview-img">
+              <div class="archive-preview-info">
+                <h2 class="archive-preview-title" id="archive-preview-title">Book Title</h2>
+                <div class="archive-preview-meta">
+                  <span class="archive-author" id="archive-preview-author">Author</span> &bull; 
+                  <span id="archive-preview-year">Year</span> &bull; 
+                  <span id="archive-preview-pages">Pages</span>
+                </div>
+                <p class="archive-preview-desc" id="archive-preview-desc">Book description...</p>
+                
+                <!-- Detected Formats Pills -->
+                <div class="detected-formats-row" id="archive-detected-formats">
+                  <!-- Dynamically populated format badges -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Format Download & Processing Selection -->
+            <div class="archive-options-grid">
+              <label class="archive-option-toggle">
+                <input type="checkbox" id="opt-download-pdf" checked>
+                <div class="toggle-content">
+                  <span class="toggle-title">Download PDF Document</span>
+                  <span class="toggle-desc">Automatically adds the PDF book directly to your Main Dashboard Bookshelf</span>
+                </div>
+              </label>
+
+              <label class="archive-option-toggle">
+                <input type="checkbox" id="opt-process-ocr" checked>
+                <div class="toggle-content">
+                  <span class="toggle-title">Extract DjVu OCR Text</span>
+                  <span class="toggle-desc">Extracts page-by-page OCR XML with Unicode NFC normalization</span>
+                </div>
+              </label>
+
+              <label class="archive-option-toggle">
+                <input type="checkbox" id="opt-generate-docx" checked>
+                <div class="toggle-content">
+                  <span class="toggle-title">Generate Word Document (.docx)</span>
+                  <span class="toggle-desc">Formatted with Nirmala UI font, original scan page breaks, and standard margins</span>
+                </div>
+              </label>
+
+              <label class="archive-option-toggle">
+                <input type="checkbox" id="opt-generate-rag" checked>
+                <div class="toggle-content">
+                  <span class="toggle-title">Generate Clean TXT &amp; JSON</span>
+                  <span class="toggle-desc">Creates clean page-delimited text and structured JSON for reading &amp; export</span>
+                </div>
+              </label>
+            </div>
+
+            <!-- Start Action Button -->
+            <div class="archive-start-row">
+              <button class="archive-start-btn" id="archive-start-btn" onclick="ArchiveApp.startDownload()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>Start Download &amp; Extraction</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Multi-Step Live Progress Card (Initially Hidden) -->
+          <div class="archive-progress-card" id="archive-progress-card" style="display: none;">
+            <div class="progress-card-header">
+              <div class="progress-step-title" id="progress-step-title">Preparing download...</div>
+              <div class="progress-percent-val" id="progress-percent-val">0%</div>
+            </div>
+            
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill" id="progress-bar-fill" style="width: 0%;"></div>
+            </div>
+
+            <div class="progress-substatus" id="progress-substatus">Initializing connection...</div>
+
+            <!-- Multi-Stage Steps Indicator -->
+            <div class="stages-indicators-grid">
+              <div class="stage-step" id="stage-meta"><span>1</span> Metadata</div>
+              <div class="stage-step" id="stage-pdf"><span>2</span> PDF Download</div>
+              <div class="stage-step" id="stage-ocr"><span>3</span> DjVu OCR XML</div>
+              <div class="stage-step" id="stage-extract"><span>4</span> NFC Extraction</div>
+              <div class="stage-step" id="stage-docx"><span>5</span> Word .DOCX</div>
+              <div class="stage-step" id="stage-save"><span>6</span> Storage &amp; Library</div>
+            </div>
+
+            <!-- Live Log Stream Toggle -->
+            <details class="archive-log-details" open>
+              <summary>Live Process Logs</summary>
+              <div class="archive-terminal" id="archive-log-terminal"></div>
+            </details>
+
+            <!-- Completion Banner -->
+            <div class="archive-success-banner" id="archive-success-banner" style="display: none;">
+              <div class="success-icon">&#10004;</div>
+              <div class="success-text">
+                <h4>Download and Extraction Complete!</h4>
+                <p id="success-desc">PDF book added to Main Dashboard Bookshelf. Extracted OCR files organized offline.</p>
+              </div>
+              <div class="success-actions">
+                <button class="success-btn primary" onclick="LibraryApp.switchMainView('library')">&#128214; View on Bookshelf</button>
+                <button class="success-btn secondary" onclick="LibraryApp.switchMainView('ocr')">&#128196; View OCR Files</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- VIEW 3: OCR & EXTRACTED TEXT FILES -->
+      <div class="view-container" id="ocr-files-view" style="display: none;">
+        <div class="ocr-view-wrapper">
+          
+          <!-- Header -->
+          <div class="ocr-view-header">
+            <div class="ocr-header-left">
+              <h1 class="ocr-view-title">OCR &amp; Extracted Text Archive</h1>
+              <p class="ocr-view-subtitle">Access extracted page-by-page DjVu text, formatted Microsoft Word (.docx) documents, and structured JSON files.</p>
+            </div>
+            <div class="ocr-header-actions">
+              <button class="archive-quick-btn" onclick="LibraryApp.switchMainView('downloader')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                <span>Download New Book</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter Bar -->
+          <div class="ocr-search-bar">
+            <input type="text" class="ocr-search-input" id="ocr-search-input" placeholder="Filter extracted books..." oninput="ArchiveApp.filterOcrCards(this.value)">
+            <span class="ocr-records-counter" id="ocr-records-count">0 items</span>
+          </div>
+
+          <!-- OCR Books Cards Grid -->
+          <div class="ocr-cards-grid" id="ocr-cards-grid">
+            <!-- Dynamically populated cards -->
+          </div>
+
+          <!-- Empty State -->
+          <div class="ocr-empty-state" id="ocr-empty-state" style="display: none;">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <h3>No Extracted OCR Files Yet</h3>
+            <p>Use the Archive Downloader to fetch books from the Internet Archive. Extracted Word documents, clean text, and JSON will appear here.</p>
+            <button class="archive-start-btn" onclick="LibraryApp.switchMainView('downloader')">Open Archive Downloader</button>
+          </div>
+
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Drag & Drop Full Window Overlay -->
+    <div class="dropzone-overlay" id="dropzone-overlay">
+      <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>
+      <div class="dropzone-text">Drop books here to add to Library</div>
+      <div class="dropzone-subtext">Supports PDF, EPUB, DOCX, TXT, and Markdown</div>
+    </div>
+
+    <!-- Hidden File Picker Input -->
+    <input type="file" id="file-picker-input" style="display:none;" multiple accept=".pdf,.epub,.docx,.txt,.md">
+
+  </div>
+
+  <!-- ==========================================================================
+       BOOK DETAILS AESTHETIC MODAL INTERFACE
+       ========================================================================== -->
+  <div class="modal-backdrop" id="book-details-modal">
+    <div class="modal-container">
+      
+      <!-- Close Button -->
+      <button class="modal-close-btn" id="modal-close-btn" title="Close">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+
+      <!-- Hero Header with 3D Book Cover -->
+      <div class="modal-hero">
+        <div class="modal-cover-box">
+          <div class="modal-3d-book">
+            <img src="" alt="Book Cover" class="modal-cover-img" id="modal-book-cover">
+          </div>
+        </div>
+
+        <div class="modal-meta">
+          <h1 class="modal-title" id="modal-book-title">Book Title</h1>
+          <div class="modal-author">by <span id="modal-book-author">Author Name</span></div>
+          
+          <div class="modal-rating-row">
+            <div class="modal-stars" id="modal-stars"></div>
+            <span class="modal-rating-text" id="modal-rating-score">5.0</span>
+            <span class="modal-reviews-count" id="modal-reviews-count">(1,240 ratings)</span>
+          </div>
+
+          <div class="modal-chips-row">
+            <span class="modal-chip format" id="modal-format-chip">EPUB</span>
+            <span class="modal-chip" id="modal-genre-chip" title="Click to edit book category" onclick="LibraryApp.openEditCategoryModal()" style="cursor: pointer;">Fiction ✏️</span>
+            <span class="modal-chip" id="modal-pages-chip">432 Pages</span>
+            <span class="modal-chip" id="modal-reading-time">&#9201; 5h 20m</span>
+          </div>
+
+          <!-- Reading Progress -->
+          <div class="modal-progress-bar-wrap">
+            <div class="modal-progress-labels">
+              <span>Reading Progress</span>
+              <span id="modal-progress-percent">0% completed</span>
+            </div>
+            <div class="modal-progress-track">
+              <div class="modal-progress-fill" id="modal-progress-fill" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="modal-actions-row">
+            <button class="read-btn" id="modal-read-btn">
+              <span>&#128214;</span> Read Book
+            </button>
+            <button class="secondary-action-btn" id="modal-edit-category-btn" title="Edit Category &amp; Bookshelf" onclick="LibraryApp.openEditCategoryModal()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+            </button>
+            <button class="secondary-action-btn" id="modal-fav-btn" title="Add to Favorites">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+            </button>
+            <button class="secondary-action-btn" id="modal-mark-read-btn" title="Mark as Finished" onclick="alert('Marked book as finished!')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Modal Tabs & Body -->
+      <div class="modal-body">
+        <div class="modal-tabs">
+          <button class="modal-tab-btn active" data-tab="synopsis" onclick="LibraryApp.switchModalTab('synopsis')">Synopsis & Overview</button>
+          <button class="modal-tab-btn" data-tab="toc" onclick="LibraryApp.switchModalTab('toc')">Table of Contents</button>
+          <button class="modal-tab-btn" data-tab="details" onclick="LibraryApp.switchModalTab('details')">Book Details & Specs</button>
+        </div>
+
+        <div class="modal-tab-content">
+          <!-- Tab 1: Synopsis -->
+          <div class="tab-pane active" id="tab-synopsis">
+            <p class="synopsis-text" id="modal-synopsis">Synopsis content...</p>
+          </div>
+
+          <!-- Tab 2: TOC -->
+          <div class="tab-pane" id="tab-toc">
+            <ul class="modal-toc-list" id="modal-toc-preview">
+              <!-- Dynamically populated chapters -->
+            </ul>
+          </div>
+
+          <!-- Tab 3: Details -->
+          <div class="tab-pane" id="tab-details">
+            <div class="details-grid">
+              <div class="detail-item">
+                <span class="detail-item-title">Language</span>
+                <span class="detail-item-val" id="modal-spec-lang">English</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-item-title">Publication Year</span>
+                <span class="detail-item-val" id="modal-spec-published">2018</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-item-title">Format</span>
+                <span class="detail-item-val" id="modal-spec-format">EPUB</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-item-title">Total Pages</span>
+                <span class="detail-item-val" id="modal-spec-pages">432</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       READER INTERFACE
+       With Realistic 3D Page Turn, Night Light, Scrubber, Themes & TTS
+       ========================================================================== -->
+  <div class="reader-view" id="reader-view" data-theme="dark">
+    
+    <!-- Reader Top Header Bar -->
+    <header class="reader-header">
+      <div class="reader-left-tools">
+        <button class="reader-back-btn" onclick="ReaderEngine.closeReader()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+          <span>Library</span>
+        </button>
+        <div class="reader-title-info">
+          <span class="reader-book-title" id="reader-book-title">Book Title</span>
+          <span class="reader-chapter-title" id="reader-chapter-title">Chapter Title</span>
+        </div>
+      </div>
+
+      <div class="reader-right-tools">
+        
+        <!-- View Mode: Realistic 3D Page Flip vs Continuous Scroll -->
+        <button class="reader-tool-btn active" id="btn-view-flip" data-view-mode="pageFlip" title="Page Turn / Flip View" onclick="ReaderEngine.setViewMode('pageFlip')">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 2v20"/></svg>
+        </button>
+        <button class="reader-tool-btn" id="btn-view-scroll" data-view-mode="scroll" title="Continuous Vertical Scroll Mode" onclick="ReaderEngine.setViewMode('scroll')">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg>
+        </button>
+
+        <!-- PDF & Scanned Books Dedicated Toolbar -->
+        <div class="pdf-tools-group" id="pdf-tools-group" style="display: none; align-items: center; gap: 4px;">
+          <!-- 1-Page vs 2-Page Spread -->
+          <button class="reader-tool-btn" id="btn-pdf-spread" title="Toggle 1-Page / 2-Page Spread" onclick="ReaderEngine.togglePdfSpread()">
+            <span id="pdf-spread-badge" style="font-size: 11px; font-weight: 700;">2P</span>
+          </button>
+
+          <!-- Fit Page vs Fit Width -->
+          <button class="reader-tool-btn" id="btn-pdf-fit" title="Toggle Fit Page / Fit Width" onclick="ReaderEngine.togglePdfFit()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+          </button>
+
+          <!-- Zoom Out & Zoom In -->
+          <button class="reader-tool-btn" title="Zoom Out" onclick="ReaderEngine.zoomPdf(-0.15)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+          </button>
+          <span class="pdf-zoom-val" id="pdf-zoom-val" style="font-size: 10px; font-weight: 600; opacity: 0.8; min-width: 32px; text-align: center;">100%</span>
+          <button class="reader-tool-btn" title="Zoom In" onclick="ReaderEngine.zoomPdf(0.15)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+          </button>
+
+          <!-- Toggle Scan vs Clean Text (for scanned PDFs with OCR) -->
+          <button class="reader-tool-btn" id="btn-toggle-scan-text" title="Switch between Scan Page &amp; Clean Reflow Text" onclick="ReaderEngine.toggleScanOrText()">
+            <span id="scan-text-badge" style="font-size: 10px; font-weight: 700;">TXT</span>
+          </button>
+        </div>
+
+        <!-- Toggle Sound Effect -->
+        <button class="reader-tool-btn active" id="btn-toggle-sound" title="Page Turn Sound Effect" onclick="ReaderEngine.toggleSound()">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+        </button>
+
+        <!-- Text-to-Speech (TTS) Read Aloud -->
+        <button class="reader-tool-btn" id="btn-reader-tts" title="Read Aloud (TTS)" onclick="ReaderEngine.startSpeaking()">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/></svg>
+        </button>
+
+        <!-- Table of Contents Toggle -->
+        <button class="reader-tool-btn" title="Table of Contents" onclick="ReaderEngine.toggleDrawer('toc-drawer')">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        </button>
+
+        <!-- Bookmarks Toggle -->
+        <button class="reader-tool-btn" title="Add Bookmark" onclick="ReaderEngine.addBookmark()">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+        </button>
+        <button class="reader-tool-btn" title="Saved Bookmarks" onclick="ReaderEngine.toggleDrawer('bookmarks-drawer')">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><polyline points="10 2 10 10 13 8 16 10 16 2"/></svg>
+        </button>
+
+        <!-- Typography & Theme Settings -->
+        <button class="reader-tool-btn" id="btn-reader-typography" title="Reading Settings" onclick="document.getElementById('typography-popover').classList.toggle('is-open')">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+        </button>
+
+        <!-- Fullscreen Toggle -->
+        <button class="reader-tool-btn" title="Fullscreen Mode" onclick="LibraryApp.toggleFullscreen()">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+        </button>
+
+      </div>
+    </header>
+
+    <!-- Typography & Reader Themes Popover -->
+    <div class="typography-popover" id="typography-popover">
+      
+      <!-- Theme Selection Palette -->
+      <div class="setting-row">
+        <span class="setting-label">Reading Theme</span>
+        <div class="theme-palette-row">
+          <div class="theme-circle active" data-set-theme="dark" style="background:#23222e; border:1px solid #444;" title="Dark Mode" onclick="ReaderEngine.setTheme('dark')"></div>
+          <div class="theme-circle" data-set-theme="light" style="background:#ffffff; border:1px solid #ddd;" title="Light Paper" onclick="ReaderEngine.setTheme('light')"></div>
+          <div class="theme-circle" data-set-theme="sepia" style="background:#f4ecd8;" title="Warm Sepia" onclick="ReaderEngine.setTheme('sepia')"></div>
+          <div class="theme-circle" data-set-theme="night" style="background:#1b1610;" title="Night Amber" onclick="ReaderEngine.setTheme('night')"></div>
+          <div class="theme-circle" data-set-theme="amoled" style="background:#000000; border:1px solid #222;" title="AMOLED Black" onclick="ReaderEngine.setTheme('amoled')"></div>
+        </div>
+      </div>
+
+      <!-- Font Family -->
+      <div class="setting-row">
+        <span class="setting-label">Font Family</span>
+        <div class="font-picker-grid">
+          <button class="font-btn active" data-font="'Merriweather', Georgia, serif" onclick="ReaderEngine.setFont('\'Merriweather\', Georgia, serif')">Merriweather</button>
+          <button class="font-btn" data-font="'Inter', sans-serif" onclick="ReaderEngine.setFont('\'Inter\', sans-serif')">Inter Sans</button>
+          <button class="font-btn" data-font="'Nirmala UI', 'Noto Sans Devanagari', 'Noto Sans Oriya', sans-serif" onclick="ReaderEngine.setFont('\'Nirmala UI\', \'Noto Sans Devanagari\', \'Noto Sans Oriya\', sans-serif')">Nirmala UI (Indic)</button>
+          <button class="font-btn" data-font="'Noto Serif Devanagari', 'Noto Serif Oriya', serif" onclick="ReaderEngine.setFont('\'Noto Serif Devanagari\', \'Noto Serif Oriya\', serif')">Devanagari / Oriya</button>
+          <button class="font-btn" data-font="Georgia, serif" onclick="ReaderEngine.setFont('Georgia, serif')">Georgia</button>
+          <button class="font-btn" data-font="monospace" onclick="ReaderEngine.setFont('monospace')">Monospace</button>
+        </div>
+      </div>
+
+      <!-- Font Size Slider -->
+      <div class="setting-row">
+        <div class="setting-label">
+          <span>Font Size</span>
+          <span id="font-size-label">18px</span>
+        </div>
+        <input type="range" min="14" max="28" value="18" oninput="ReaderEngine.setFontSize(this.value)">
+      </div>
+
+      <!-- Night Light Warmth Slider -->
+      <div class="setting-row">
+        <div class="setting-label">
+          <span>Night Light Warmth</span>
+          <span id="warmth-value-label">0%</span>
+        </div>
+        <input type="range" min="0" max="100" value="0" oninput="ReaderEngine.setWarmth(this.value)">
+      </div>
+
+    </div>
+
+    <!-- TTS Floating Bar -->
+    <div class="tts-player-bar" id="tts-player-bar">
+      <span style="font-size: 11px; font-weight: 600; color: var(--reader-accent);">&#128362; Reading Aloud...</span>
+      <button class="tts-btn" onclick="ReaderEngine.stopSpeaking()" title="Stop Reading">&#9209;</button>
+    </div>
+
+    <!-- Reader Main Stage -->
+    <div class="reader-stage">
+      
+      <!-- Previous Page Arrow -->
+      <button class="reader-arrow-btn reader-arrow-left" onclick="ReaderEngine.prevPage()" title="Previous Page (Left Arrow)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+
+      <!-- 1. Realistic 3D Page Flip Container -->
+      <div class="page-flip-wrapper" id="page-flip-container">
+        <!-- Dynamically loaded with StPageFlip -->
+      </div>
+
+      <!-- 2. Continuous Scroll Container -->
+      <div class="reader-scroll-container" id="reader-scroll-container">
+        <div class="scroll-text-body" id="scroll-text-body"></div>
+      </div>
+
+      <!-- 3. PDF Canvas Container -->
+      <div class="reader-pdf-container" id="reader-pdf-container"></div>
+
+      <!-- Next Page Arrow -->
+      <button class="reader-arrow-btn reader-arrow-right" onclick="ReaderEngine.nextPage()" title="Next Page (Right Arrow / Spacebar)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+
+    </div>
+
+    <!-- Reader Bottom Footer / Progress Scrubber Bar -->
+    <footer class="reader-footer">
+      <div class="reader-progress-wrap">
+        <input type="range" class="reader-scrubber" id="reader-scrubber" min="1" max="100" value="1">
+      </div>
+      <div class="reader-progress-info">
+        <span id="reader-page-count">Page 1 of 1</span>
+        <span>&bull;</span>
+        <span class="reader-progress-percent" id="reader-percent">0%</span>
+        <span>&bull;</span>
+        <span id="reader-time-left">~5 mins left</span>
+      </div>
+    </footer>
+
+    <!-- Slide-in Drawers -->
+    <!-- TOC Drawer -->
+    <aside class="reader-drawer" id="toc-drawer">
+      <div class="drawer-header">
+        <span class="drawer-title">Table of Contents</span>
+        <button class="reader-tool-btn" onclick="ReaderEngine.toggleDrawer('toc-drawer')">&times;</button>
+      </div>
+      <div class="drawer-content" id="toc-drawer-list"></div>
+    </aside>
+
+    <!-- Bookmarks Drawer -->
+    <aside class="reader-drawer drawer-right" id="bookmarks-drawer">
+      <div class="drawer-header">
+        <span class="drawer-title">Saved Bookmarks</span>
+        <button class="reader-tool-btn" onclick="ReaderEngine.toggleDrawer('bookmarks-drawer')">&times;</button>
+      </div>
+      <div class="drawer-content" id="bookmarks-drawer-list"></div>
+    </aside>
+
+  </div>
+
+  <!-- ==========================================================================
+       USER PROFILE & TOTAL READING STATS MODAL
+       ========================================================================== -->
+  <div class="modal-backdrop" id="profile-stats-modal">
+    <div class="profile-modal-container">
+      
+      <!-- Close Button -->
+      <button class="modal-close-btn" id="profile-modal-close" onclick="LibraryApp.closeProfileStatsModal()" title="Close">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+
+      <div class="profile-modal-grid">
+        
+        <!-- Left Column: User Profile Editor -->
+        <div class="profile-editor-card">
+          <div class="profile-section-badge">&#128100; Profile Details</div>
+          
+          <div class="profile-avatar-wrap">
+            <div class="profile-avatar-preview-box">
+              <img id="profile-preview-avatar" src="assets/avatars/user_jessica.png" alt="Avatar" class="profile-large-avatar">
+              <button class="avatar-change-badge" onclick="document.getElementById('avatar-file-input').click()" title="Upload Custom Photo">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              </button>
+            </div>
+            <input type="file" id="avatar-file-input" style="display:none;" accept="image/*" onchange="LibraryApp.handleCustomAvatarUpload(event)">
+            <span class="avatar-upload-hint">Upload photo or pick a preset:</span>
+          </div>
+
+          <!-- Preset Avatars -->
+          <div class="avatar-presets-row" id="avatar-presets-list">
+            <!-- Dynamically populated preset choices -->
+          </div>
+
+          <div class="profile-form-group">
+            <label class="profile-field-label">Display Name</label>
+            <input type="text" class="profile-field-input" id="profile-name-input" value="Jessica Chastain" placeholder="Your Name">
+          </div>
+
+          <div class="profile-form-group">
+            <label class="profile-field-label">Member Role / Bio</label>
+            <input type="text" class="profile-field-input" id="profile-bio-input" value="HomeLibrary Pro Member" placeholder="Bio or Role">
+          </div>
+
+          <div class="profile-form-group">
+            <label class="profile-field-label">Yearly Reading Goal (Books)</label>
+            <input type="number" class="profile-field-input" id="profile-goal-input" min="1" max="365" value="30">
+          </div>
+
+          <button class="profile-save-btn" onclick="LibraryApp.saveProfile()">
+            <span>Save Profile</span>
+          </button>
+        </div>
+
+        <!-- Right Column: Total Reading Stats Dashboard -->
+        <div class="reading-stats-card">
+          <div class="profile-section-badge">&#128202; Total Reading Stats</div>
+
+          <!-- 4 Metric Cards Grid -->
+          <div class="stats-metrics-grid">
+            <div class="stat-metric-box">
+              <div class="metric-icon">&#9201;</div>
+              <div class="metric-val" id="stat-total-time">18h 45m</div>
+              <div class="metric-lbl">Total Reading Time</div>
+            </div>
+            <div class="stat-metric-box">
+              <div class="metric-icon">&#128214;</div>
+              <div class="metric-val" id="stat-pages-read">842</div>
+              <div class="metric-lbl">Total Pages Read</div>
+            </div>
+            <div class="stat-metric-box">
+              <div class="metric-icon">&#127942;</div>
+              <div class="metric-val" id="stat-books-completed">6</div>
+              <div class="metric-lbl">Books Completed</div>
+            </div>
+            <div class="stat-metric-box">
+              <div class="metric-icon">&#128293;</div>
+              <div class="metric-val" id="stat-streak-days">7 Days</div>
+              <div class="metric-lbl">Current Streak</div>
+            </div>
+          </div>
+
+          <!-- Yearly Goal Progress Bar -->
+          <div class="stats-goal-card">
+            <div class="goal-header">
+              <span class="goal-title">Yearly Reading Goal</span>
+              <span class="goal-ratio" id="stat-goal-ratio">6 / 30 Books (20%)</span>
+            </div>
+            <div class="goal-track">
+              <div class="goal-fill" id="stat-goal-fill" style="width: 20%;"></div>
+            </div>
+          </div>
+
+          <!-- Format Breakdown -->
+          <div class="stats-breakdown-card">
+            <span class="breakdown-title">Formats in Library</span>
+            <div class="format-chips-summary" id="stat-format-summary">
+              <!-- Dynamically populated format counts -->
+            </div>
+          </div>
+
+          <!-- Recent Reading Activity List -->
+          <div class="stats-activity-card">
+            <span class="activity-title">Recent Reading Progress</span>
+            <div class="activity-list" id="stat-activity-list">
+              <!-- Dynamically populated reading books -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       EDIT BOOK CATEGORY & SHELF MODAL
+       Allows editing book's primary category/genre, custom genres, and bookshelf placement
+       ========================================================================== -->
+  <div class="modal-backdrop" id="edit-category-modal">
+    <div class="edit-category-container">
+      <div class="edit-category-header">
+        <div class="edit-category-title-wrap">
+          <span class="edit-category-badge">&#9998; Edit Bookshelf &amp; Category</span>
+          <h2 class="edit-category-title" id="edit-category-book-title">Book Title</h2>
+        </div>
+        <button class="modal-close-btn" onclick="LibraryApp.closeEditCategoryModal()" title="Close">&times;</button>
+      </div>
+
+      <div class="edit-category-body">
+        <div class="edit-category-book-preview">
+          <img id="edit-category-cover" src="assets/covers/default_cover.png" alt="Cover" class="edit-category-thumb">
+          <div class="edit-category-meta">
+            <span class="edit-category-author" id="edit-category-author">Author</span>
+            <span class="edit-category-curr-shelf" id="edit-category-curr-shelf">Current Shelf: Most Popular</span>
+          </div>
+        </div>
+
+        <div class="edit-form-group">
+          <label class="edit-form-label">Primary Category / Genre</label>
+          <select id="edit-category-select" class="edit-form-select" onchange="LibraryApp.onPrimaryCategoryChange(this.value)">
+            <!-- Populated dynamically with all genres plus option for Custom -->
+          </select>
+        </div>
+
+        <div class="edit-form-group" id="edit-custom-category-group" style="display: none;">
+          <label class="edit-form-label">Custom Genre Name</label>
+          <input type="text" id="edit-custom-category-input" class="edit-form-input" placeholder="e.g. Odia Literature, Vedic Philosophy...">
+        </div>
+
+        <div class="edit-form-group">
+          <label class="edit-form-label">Sub-Genres / Tags <span class="edit-form-sublabel">(Comma separated)</span></label>
+          <input type="text" id="edit-subgenres-input" class="edit-form-input" placeholder="e.g. Poetry, Classics, Philosophy">
+        </div>
+
+        <div class="edit-form-group">
+          <label class="edit-form-label">Bookshelf Placement</label>
+          <div class="shelf-choice-grid">
+            <label class="shelf-radio-label">
+              <input type="radio" name="shelf-placement" value="popular" id="shelf-radio-popular">
+              <div class="shelf-radio-card">
+                <span class="shelf-radio-icon">&#128293;</span>
+                <span class="shelf-radio-title">Most Popular</span>
+                <span class="shelf-radio-desc">Top row of bookshelf</span>
+              </div>
+            </label>
+            <label class="shelf-radio-label">
+              <input type="radio" name="shelf-placement" value="recommended" id="shelf-radio-recommended">
+              <div class="shelf-radio-card">
+                <span class="shelf-radio-icon">&#11088;</span>
+                <span class="shelf-radio-title">Recommended</span>
+                <span class="shelf-radio-desc">Curated recommendations</span>
+              </div>
+            </label>
+            <label class="shelf-radio-label">
+              <input type="radio" name="shelf-placement" value="imported" id="shelf-radio-imported">
+              <div class="shelf-radio-card">
+                <span class="shelf-radio-icon">&#128229;</span>
+                <span class="shelf-radio-title">Archive &amp; Downloads</span>
+                <span class="shelf-radio-desc">My downloads collection</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="edit-category-footer">
+          <button class="btn-cancel" onclick="LibraryApp.closeEditCategoryModal()">Cancel</button>
+          <button class="btn-save-category" onclick="LibraryApp.saveCategoryEdit()">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Night Light Amber Tint Screen Filter -->
+  <div id="night-light-overlay"></div>
+
+  <!-- Offline Local Vendor Libraries -->
+  <script src="assets/libs/jszip.min.js"></script>
+  <script src="assets/libs/mammoth.browser.min.js"></script>
+  <script src="assets/libs/pdf.min.js"></script>
+  <script src="assets/libs/epub.min.js"></script>
+  <script src="assets/libs/page-flip.browser.js"></script>
+
+  <!-- Format Parsers -->
+  <script src="js/parsers/pdf-parser.js"></script>
+  <script src="js/parsers/epub-parser.js"></script>
+  <script src="js/parsers/docx-parser.js"></script>
+  <script src="js/parsers/txt-parser.js"></script>
+
+  <!-- Application Logic -->
+  <script src="js/docx-generator.js"></script>
+  <script src="js/archive-importer.js"></script>
+  <script src="js/books-data.js"></script>
+  <script src="js/reader.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>

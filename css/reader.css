@@ -1,0 +1,732 @@
+/* ==========================================================================
+   HomeLibrary - Aesthetic Clean Ebook Reader Interface
+   With Realistic 3D Page Turn, Night Light, Themes & Progress Scrubber
+   ========================================================================== */
+
+:root {
+  --reader-bg: #23222e;
+  --reader-text: #e2e1ec;
+  --reader-accent: #f5a623;
+  --reader-bar-bg: #1c1b24;
+  --reader-border: rgba(255, 255, 255, 0.08);
+  --reader-font-size: 18px;
+  --reader-line-height: 1.8;
+  --reader-font-family: 'Merriweather', Georgia, serif;
+  --reader-max-width: 780px;
+}
+
+/* Reader Themes */
+.reader-view[data-theme="dark"] {
+  --reader-bg: #23222e;
+  --reader-text: #e2e1ec;
+  --reader-bar-bg: #1a1924;
+  --reader-border: rgba(255, 255, 255, 0.08);
+}
+
+.reader-view[data-theme="light"] {
+  --reader-bg: #fcfcfd;
+  --reader-text: #232328;
+  --reader-bar-bg: #f1f2f5;
+  --reader-border: rgba(0, 0, 0, 0.09);
+  --reader-accent: #e67e22;
+}
+
+.reader-view[data-theme="sepia"] {
+  --reader-bg: #f4ecd8;
+  --reader-text: #3c3222;
+  --reader-bar-bg: #e8dec7;
+  --reader-border: rgba(60, 50, 34, 0.12);
+  --reader-accent: #a0672e;
+}
+
+.reader-view[data-theme="night"] {
+  --reader-bg: #1b1610;
+  --reader-text: #e5d4bb;
+  --reader-bar-bg: #14100b;
+  --reader-border: rgba(229, 212, 187, 0.1);
+  --reader-accent: #f39c12;
+}
+
+.reader-view[data-theme="amoled"] {
+  --reader-bg: #000000;
+  --reader-text: #d8d8d8;
+  --reader-bar-bg: #0a0a0a;
+  --reader-border: rgba(255, 255, 255, 0.07);
+  --reader-accent: #f5a623;
+}
+
+/* Main Reader Screen View Container */
+.reader-view {
+  position: absolute;
+  inset: 0;
+  background-color: var(--reader-bg);
+  color: var(--reader-text);
+  z-index: 500;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+}
+
+.reader-view.is-active {
+  display: flex;
+  opacity: 1;
+}
+
+/* Reader Top Navigation Bar */
+.reader-header {
+  height: 52px;
+  background-color: var(--reader-bar-bg);
+  border-bottom: 1px solid var(--reader-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 20;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.reader-left-tools {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.reader-back-btn {
+  background: transparent;
+  border: none;
+  color: var(--reader-text);
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+  opacity: 0.9;
+}
+
+.reader-back-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  opacity: 1;
+}
+
+.reader-title-info {
+  display: flex;
+  flex-direction: column;
+  max-width: 320px;
+}
+
+.reader-book-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reader-chapter-title {
+  font-size: 10.5px;
+  opacity: 0.7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reader-right-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reader-tool-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--reader-text);
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.reader-tool-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  opacity: 1;
+}
+
+.reader-tool-btn.active {
+  background: rgba(245, 166, 35, 0.18);
+  color: var(--reader-accent);
+  opacity: 1;
+  border-color: rgba(245, 166, 35, 0.4);
+}
+
+/* --------------------------------------------------------------------------
+   READER MAIN STAGE
+   -------------------------------------------------------------------------- */
+.reader-stage {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 16px 24px;
+}
+
+/* 1. REALISTIC 3D PAGE FLIP CONTAINER */
+.page-flip-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  max-width: 1100px;
+  max-height: 720px;
+  position: relative;
+}
+
+.st-page-flip {
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* Realistic Page Surface */
+.book-page {
+  background-color: var(--reader-bg);
+  color: var(--reader-text);
+  padding: 40px 48px;
+  overflow: hidden;
+  font-family: var(--reader-font-family);
+  font-size: var(--reader-font-size);
+  line-height: var(--reader-line-height);
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Spine shadow on center split */
+.book-page.page-left {
+  box-shadow: inset -15px 0 30px -15px rgba(0, 0, 0, 0.35);
+  border-right: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.book-page.page-right {
+  box-shadow: inset 15px 0 30px -15px rgba(0, 0, 0, 0.35);
+}
+
+/* Page Header & Footer */
+.page-header-mark {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.5;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--reader-border);
+  padding-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.page-body-content {
+  flex: 1;
+  overflow: hidden;
+}
+
+.page-body-content h1,
+.page-body-content h2,
+.page-body-content h3 {
+  margin-bottom: 16px;
+  line-height: 1.3;
+  color: var(--reader-text);
+}
+
+.page-body-content p {
+  margin-bottom: 16px;
+  text-indent: 1.5em;
+  text-align: justify;
+}
+
+.page-body-content p:first-of-type {
+  text-indent: 0;
+}
+
+.page-footer-mark {
+  margin-top: auto;
+  padding-top: 10px;
+  font-size: 11px;
+  opacity: 0.6;
+  text-align: center;
+}
+
+/* 2. CONTINUOUS SCROLL CONTAINER */
+.reader-scroll-container {
+  display: none;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  padding: 30px 20px 60px;
+}
+
+.reader-scroll-container.is-active {
+  display: block;
+}
+
+.reader-scroll-container::-webkit-scrollbar {
+  width: 6px;
+}
+.reader-scroll-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
+.scroll-text-body {
+  max-width: var(--reader-max-width);
+  margin: 0 auto;
+  font-family: var(--reader-font-family);
+  font-size: var(--reader-font-size);
+  line-height: var(--reader-line-height);
+}
+
+.scroll-text-body p {
+  margin-bottom: 18px;
+  text-align: justify;
+}
+
+.scroll-text-body h1,
+.scroll-text-body h2,
+.scroll-text-body h3 {
+  margin: 32px 0 16px;
+  line-height: 1.3;
+}
+
+/* 3. PDF CANVAS CONTAINER & SPREAD SYSTEM */
+.reader-pdf-container {
+  display: none;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  position: relative;
+  scrollbar-width: thin;
+}
+
+.reader-pdf-container.is-active {
+  display: flex;
+}
+
+.reader-pdf-container.align-top {
+  align-items: flex-start;
+}
+
+/* Spread Container (Dual-Page Book Spread or Single-Page) */
+.pdf-spread-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  max-width: 100%;
+  max-height: 100%;
+  gap: 0;
+  transition: transform 0.2s ease-out;
+}
+
+.pdf-page-card {
+  position: relative;
+  background: #ffffff;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+}
+
+.pdf-spread-left .pdf-page-card {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  box-shadow: -8px 10px 30px rgba(0, 0, 0, 0.5), inset -15px 0 25px rgba(0, 0, 0, 0.08);
+}
+
+.pdf-spread-right .pdf-page-card {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  box-shadow: 8px 10px 30px rgba(0, 0, 0, 0.5), inset 15px 0 25px rgba(0, 0, 0, 0.08);
+}
+
+/* Spine shadow divider for dual spread */
+.pdf-spread-spine {
+  width: 6px;
+  align-self: stretch;
+  background: linear-gradient(to right, rgba(0,0,0,0.35), rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.35));
+  box-shadow: 0 0 10px rgba(0,0,0,0.4);
+  z-index: 5;
+  pointer-events: none;
+}
+
+.pdf-canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Continuous Scroll PDF Mode */
+.pdf-scroll-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 24px 0 60px;
+  width: 100%;
+}
+
+.pdf-scroll-list .pdf-page-card {
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+}
+
+/* OCR Reflow Text Mode with Indic script styling */
+.pdf-reflow-view {
+  width: 100%;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 40px 32px;
+  background: var(--reader-bg);
+  color: var(--reader-text);
+  font-family: var(--reader-font-family);
+  font-size: var(--reader-font-size);
+  line-height: var(--reader-line-height);
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+}
+
+.pdf-reflow-header {
+  border-bottom: 1px solid var(--reader-border);
+  padding-bottom: 12px;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.pdf-reflow-content {
+  font-feature-settings: "kern" 1, "liga" 1;
+  text-rendering: optimizeLegibility;
+  word-spacing: 0.08em;
+}
+
+.pdf-reflow-content p {
+  margin-bottom: 18px;
+  text-align: justify;
+}
+
+/* Indic Typography Enhancements (Hindi, Odia, Sanskrit, English) */
+.font-indic,
+[data-lang="sa"],
+[data-lang="hi"],
+[data-lang="or"] {
+  font-family: 'Nirmala UI', 'Noto Sans Devanagari', 'Noto Sans Oriya', sans-serif;
+  line-height: 2.0;
+  letter-spacing: 0.02em;
+}
+
+/* Page Navigation Arrows */
+.reader-arrow-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 64px;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--reader-border);
+  color: var(--reader-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 8px;
+  z-index: 10;
+  transition: all 0.2s ease;
+  opacity: 0.6;
+}
+
+.reader-arrow-btn:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.6);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.reader-arrow-left {
+  left: 12px;
+}
+
+.reader-arrow-right {
+  right: 12px;
+}
+
+/* --------------------------------------------------------------------------
+   READER BOTTOM PROGRESS BAR & SCRUBBER
+   -------------------------------------------------------------------------- */
+.reader-footer {
+  height: 52px;
+  background-color: var(--reader-bar-bg);
+  border-top: 1px solid var(--reader-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  z-index: 20;
+  flex-shrink: 0;
+  gap: 20px;
+  user-select: none;
+}
+
+.reader-progress-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.reader-scrubber {
+  flex: 1;
+  height: 6px;
+  accent-color: var(--reader-accent);
+  cursor: pointer;
+}
+
+.reader-progress-info {
+  font-size: 11px;
+  white-space: nowrap;
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reader-progress-percent {
+  font-weight: 700;
+  color: var(--reader-accent);
+}
+
+/* --------------------------------------------------------------------------
+   DRAWERS (TOC, BOOKMARKS, SEARCH, SETTINGS)
+   -------------------------------------------------------------------------- */
+.reader-drawer {
+  position: absolute;
+  top: 52px;
+  bottom: 52px;
+  width: 320px;
+  background-color: var(--reader-bar-bg);
+  border-right: 1px solid var(--reader-border);
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.4);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.reader-drawer.is-open {
+  transform: translateX(0);
+}
+
+.reader-drawer.drawer-right {
+  left: auto;
+  right: 0;
+  border-right: none;
+  border-left: 1px solid var(--reader-border);
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.4);
+  transform: translateX(100%);
+}
+
+.reader-drawer.drawer-right.is-open {
+  transform: translateX(0);
+}
+
+.drawer-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--reader-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.drawer-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.drawer-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drawer-item {
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background 0.2s;
+}
+
+.drawer-item:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: var(--reader-accent);
+}
+
+.drawer-item.active {
+  background: rgba(245, 166, 35, 0.15);
+  color: var(--reader-accent);
+  font-weight: 600;
+}
+
+/* Typography Popover */
+.typography-popover {
+  position: absolute;
+  top: 56px;
+  right: 60px;
+  width: 270px;
+  background-color: var(--reader-bar-bg);
+  border: 1px solid var(--reader-border);
+  border-radius: 10px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+  padding: 16px;
+  z-index: 40;
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.typography-popover.is-open {
+  display: flex;
+}
+
+.setting-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.setting-label {
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.8;
+  display: flex;
+  justify-content: space-between;
+}
+
+.font-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+.font-btn {
+  padding: 6px 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--reader-text);
+  font-size: 11px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.font-btn.active {
+  border-color: var(--reader-accent);
+  background: rgba(245, 166, 35, 0.15);
+  color: var(--reader-accent);
+  font-weight: 600;
+}
+
+.theme-palette-row {
+  display: flex;
+  gap: 8px;
+}
+
+.theme-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.2s;
+}
+
+.theme-circle:hover {
+  transform: scale(1.1);
+}
+
+.theme-circle.active {
+  border-color: var(--reader-accent);
+  transform: scale(1.15);
+}
+
+/* TTS Player Floating Bar */
+.tts-player-bar {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--reader-bar-bg);
+  border: 1px solid var(--reader-border);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  border-radius: 30px;
+  padding: 8px 18px;
+  display: none;
+  align-items: center;
+  gap: 14px;
+  z-index: 25;
+}
+
+.tts-player-bar.is-active {
+  display: flex;
+}
+
+.tts-btn {
+  background: transparent;
+  border: none;
+  color: var(--reader-text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.tts-btn:hover {
+  background: rgba(255,255,255,0.1);
+  color: var(--reader-accent);
+}
